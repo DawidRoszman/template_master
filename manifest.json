@@ -9,7 +9,7 @@
       "strict_min_version": "115.0"
     }
   },
-  "permissions": ["compose", "storage", "tabs"],
+  "permissions": ["compose", "storage", "tabs", "addressBooks"],
   "background": {
     "scripts": ["shared/default-templates.js", "background.js"]
   },

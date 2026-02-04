@@ -56,3 +56,12 @@ Advanced:
 
 `format` supports: `month`, `shortMonth`, `monthYear`, `shortMonthYear`.
 `locale` supports any BCP-47 tag (e.g. `pl` or `pl-PL`).
+
+## Contact placeholders
+When composing a message to a contact in your address book, you can use:
+- `{{contact.firstName}}`
+- `{{contact.lastName}}`
+- `{{contact.displayName}}`
+- `{{contact.email}}`
+
+Underscore variants also work: `{{contact_first_name}}`, etc.

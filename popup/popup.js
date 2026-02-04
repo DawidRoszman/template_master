@@ -11,6 +11,7 @@ const optionsButton = document.getElementById("openOptions");
 
 let templates = [];
 let currentTemplate = null;
+let contactValues = {};
 
 function setStatus(message) {
   statusEl.textContent = message;
@@ -166,10 +167,14 @@ function collectValues() {
 function applyValues(text, values) {
   let result = text || "";
   Object.keys(values).forEach((key) => {
-    const pattern = new RegExp(`{{\\s*${key}\\s*}}`, "g");
+    const pattern = new RegExp(`{{\\s*${escapeRegExp(key)}\\s*}}`, "g");
     result = result.replace(pattern, values[key]);
   });
   return result;
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function toPlainText(html) {
@@ -182,7 +187,7 @@ function updatePreview() {
   if (!currentTemplate) {
     return;
   }
-  const values = collectValues();
+  const values = { ...contactValues, ...collectValues() };
   subjectPreview.textContent = applyValues(currentTemplate.subject, values);
   bodyPreview.textContent = toPlainText(applyValues(currentTemplate.body, values));
 }
@@ -197,6 +202,7 @@ async function loadTemplates() {
     currentTemplate = getTemplateByValue(initialValue);
     renderFields(currentTemplate);
   }
+  await loadContactValues();
 }
 
 function validateRequiredFields() {
@@ -223,8 +229,9 @@ async function applyTemplate() {
   }
 
   const values = collectValues();
-  const subject = applyValues(currentTemplate.subject, values);
-  const bodyHtml = applyValues(currentTemplate.body, values);
+  const mergedValues = { ...contactValues, ...values };
+  const subject = applyValues(currentTemplate.subject, mergedValues);
+  const bodyHtml = applyValues(currentTemplate.body, mergedValues);
   const bodyPlain = toPlainText(bodyHtml);
 
   try {
@@ -262,3 +269,129 @@ loadTemplates().catch((error) => {
   console.error(error);
   setStatus("Failed to load templates.");
 });
+
+async function loadContactValues() {
+  contactValues = await fetchContactValues();
+  updatePreview();
+}
+
+async function fetchContactValues() {
+  try {
+    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+    if (!tab) {
+      return {};
+    }
+    const details = await browser.compose.getComposeDetails(tab.id);
+    const recipients = normalizeRecipients(details?.to);
+    if (recipients.length === 0) {
+      return {};
+    }
+
+    const recipientInfo = await resolveRecipientInfo(recipients[0]);
+    if (!recipientInfo) {
+      return {};
+    }
+
+    return buildContactValueMap(recipientInfo);
+  } catch (error) {
+    console.error(error);
+    return {};
+  }
+}
+
+function normalizeRecipients(value) {
+  if (!value) {
+    return [];
+  }
+  return Array.isArray(value) ? value : [value];
+}
+
+async function resolveRecipientInfo(recipient) {
+  if (recipient && typeof recipient === "object") {
+    if (recipient.type === "contact" && recipient.id) {
+      const contact = await browser.contacts.get(recipient.id);
+      return mapContact(contact);
+    }
+    if (recipient.type === "mailingList" && recipient.id) {
+      return null;
+    }
+  }
+
+  if (typeof recipient === "string") {
+    const { email, name } = parseAddress(recipient);
+    if (!email && !name) {
+      return null;
+    }
+    const contact = email ? await searchContactByEmail(email) : null;
+    if (contact) {
+      return mapContact(contact, email, name);
+    }
+    return mapContact(null, email, name);
+  }
+
+  return null;
+}
+
+async function searchContactByEmail(email) {
+  if (!email) {
+    return null;
+  }
+  const results = await browser.contacts.quickSearch({
+    searchString: email,
+    includeLocal: true,
+  });
+  return Array.isArray(results) && results.length > 0 ? results[0] : null;
+}
+
+function mapContact(contact, emailFallback = "", nameFallback = "") {
+  const properties = contact?.properties || {};
+  const firstName = properties.FirstName || properties.firstName || "";
+  const lastName = properties.LastName || properties.lastName || "";
+  const displayName = properties.DisplayName || properties.displayName || nameFallback || "";
+  const primaryEmail = properties.PrimaryEmail || properties.primaryEmail || emailFallback || "";
+
+  const derived = deriveNameParts(displayName);
+  return {
+    firstName: firstName || derived.firstName,
+    lastName: lastName || derived.lastName,
+    displayName,
+    email: primaryEmail,
+  };
+}
+
+function buildContactValueMap(info) {
+  const safe = (value) => value || "";
+  return {
+    "contact.firstName": safe(info.firstName),
+    "contact.lastName": safe(info.lastName),
+    "contact.displayName": safe(info.displayName),
+    "contact.email": safe(info.email),
+    contact_first_name: safe(info.firstName),
+    contact_last_name: safe(info.lastName),
+    contact_display_name: safe(info.displayName),
+    contact_email: safe(info.email),
+  };
+}
+
+function parseAddress(value) {
+  const trimmed = value.trim();
+  const match = trimmed.match(/^(.*)<([^>]+)>$/);
+  if (match) {
+    return { name: match[1].trim().replace(/^\"|\"$/g, ""), email: match[2].trim() };
+  }
+  if (trimmed.includes("@")) {
+    return { name: "", email: trimmed };
+  }
+  return { name: trimmed, email: "" };
+}
+
+function deriveNameParts(displayName) {
+  if (!displayName) {
+    return { firstName: "", lastName: "" };
+  }
+  const parts = displayName.split(/\s+/).filter(Boolean);
+  if (parts.length === 1) {
+    return { firstName: parts[0], lastName: "" };
+  }
+  return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
+}
