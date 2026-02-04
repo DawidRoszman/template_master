@@ -248,6 +248,9 @@ header p {
   border-radius: 8px;
   padding: 6px 10px;
   cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
 .rich-editor {
