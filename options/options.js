@@ -604,10 +604,27 @@ function handleToolbarClick(event) {
   if (command === "insertLineBreak") {
     document.execCommand("insertHTML", false, "<br>");
     markDirty();
+    updateToolbarState();
     return;
   }
   document.execCommand(command, false, null);
   markDirty();
+  updateToolbarState();
+}
+
+function updateToolbarState() {
+  if (!toolbar) {
+    return;
+  }
+  toolbar.querySelectorAll("button[data-command]").forEach((button) => {
+    const command = button.dataset.command;
+    if (command === "bold" || command === "italic") {
+      const isActive = document.queryCommandState(command);
+      button.classList.toggle("active", Boolean(isActive));
+    } else {
+      button.classList.remove("active");
+    }
+  });
 }
 
 function applyJson() {
@@ -697,6 +714,7 @@ bodyEditor.addEventListener("input", () => {
   }
   draft.body = bodyEditor.innerHTML;
   markDirty();
+  updateToolbarState();
 });
 
 bodyEditor.addEventListener("blur", () => {
@@ -704,6 +722,14 @@ bodyEditor.addEventListener("blur", () => {
     return;
   }
   draft.body = bodyEditor.innerHTML;
+});
+
+bodyEditor.addEventListener("keyup", updateToolbarState);
+bodyEditor.addEventListener("mouseup", updateToolbarState);
+document.addEventListener("selectionchange", () => {
+  if (document.activeElement === bodyEditor) {
+    updateToolbarState();
+  }
 });
 
 toolbar.addEventListener("click", handleToolbarClick);

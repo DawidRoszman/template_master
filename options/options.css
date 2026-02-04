@@ -253,6 +253,12 @@ header p {
   font-family: "Segoe UI", Arial, sans-serif;
 }
 
+.toolbar button.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
 .rich-editor {
   min-height: 180px;
   border: 1px solid var(--border);
