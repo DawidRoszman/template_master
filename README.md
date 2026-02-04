@@ -47,9 +47,11 @@ Advanced:
     "count": 4,
     "startOffset": 0,
     "step": -1,
-    "format": "monthYear"
+    "format": "monthYear",
+    "locale": "pl"
   }
 }
 ```
 
 `format` supports: `month`, `shortMonth`, `monthYear`, `shortMonthYear`.
+`locale` supports any BCP-47 tag (e.g. `pl` or `pl-PL`).

@@ -81,7 +81,7 @@ function resolveSelectOptions(field) {
 
 function buildDynamicOptions(optionsDynamic) {
   if (optionsDynamic === "months") {
-    return buildMonthOptions({ count: 2, startOffset: 0, step: -1, format: "monthYear" });
+    return buildMonthOptions({ count: 2, startOffset: 0, step: -1, format: "monthYear", locale: undefined });
   }
 
   if (optionsDynamic && optionsDynamic.type === "months") {
@@ -90,25 +90,26 @@ function buildDynamicOptions(optionsDynamic) {
       startOffset: Number.isFinite(optionsDynamic.startOffset) ? optionsDynamic.startOffset : 0,
       step: Number.isFinite(optionsDynamic.step) ? optionsDynamic.step : -1,
       format: optionsDynamic.format || "monthYear",
+      locale: normalizeLocale(optionsDynamic.locale),
     });
   }
 
   return [];
 }
 
-function buildMonthOptions({ count, startOffset, step, format }) {
+function buildMonthOptions({ count, startOffset, step, format, locale }) {
   const options = [];
   const base = new Date();
 
   for (let i = 0; i < count; i += 1) {
     const date = new Date(base.getFullYear(), base.getMonth() + startOffset + step * i, 1);
-    options.push(formatMonth(date, format));
+    options.push(formatMonth(date, format, locale));
   }
 
   return options;
 }
 
-function formatMonth(date, format) {
+function formatMonth(date, format, locale) {
   let config = { month: "long", year: "numeric" };
   switch (format) {
     case "month":
@@ -125,7 +126,17 @@ function formatMonth(date, format) {
       config = { month: "long", year: "numeric" };
       break;
   }
-  return new Intl.DateTimeFormat(undefined, config).format(date);
+  return new Intl.DateTimeFormat(locale, config).format(date);
+}
+
+function normalizeLocale(locale) {
+  if (!locale) {
+    return undefined;
+  }
+  if (locale === "pl") {
+    return "pl-PL";
+  }
+  return locale;
 }
 
 function renderFields(template) {
