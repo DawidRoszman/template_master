@@ -24,3 +24,32 @@ Example field definition:
   "required": true
 }
 ```
+
+### Dynamic select options (months)
+You can generate month options automatically:
+```json
+{
+  "id": "report_month",
+  "label": "Report month",
+  "type": "select",
+  "optionsDynamic": "months"
+}
+```
+
+Advanced:
+```json
+{
+  "id": "report_month",
+  "label": "Report month",
+  "type": "select",
+  "optionsDynamic": {
+    "type": "months",
+    "count": 4,
+    "startOffset": 0,
+    "step": -1,
+    "format": "monthYear"
+  }
+}
+```
+
+`format` supports: `month`, `shortMonth`, `monthYear`, `shortMonthYear`.

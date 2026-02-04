@@ -50,7 +50,7 @@ function createFieldInput(field) {
   let input;
   if (field.type === "select") {
     input = document.createElement("select");
-    (field.options || []).forEach((optionValue) => {
+    resolveSelectOptions(field).forEach((optionValue) => {
       const option = document.createElement("option");
       option.value = optionValue;
       option.textContent = optionValue;
@@ -70,6 +70,62 @@ function createFieldInput(field) {
 
   wrapper.appendChild(input);
   return wrapper;
+}
+
+function resolveSelectOptions(field) {
+  const staticOptions = Array.isArray(field.options) ? field.options : [];
+  const dynamicOptions = field.optionsDynamic ? buildDynamicOptions(field.optionsDynamic) : [];
+  const merged = [...staticOptions, ...dynamicOptions];
+  return [...new Set(merged)];
+}
+
+function buildDynamicOptions(optionsDynamic) {
+  if (optionsDynamic === "months") {
+    return buildMonthOptions({ count: 2, startOffset: 0, step: -1, format: "monthYear" });
+  }
+
+  if (optionsDynamic && optionsDynamic.type === "months") {
+    return buildMonthOptions({
+      count: Number.isFinite(optionsDynamic.count) ? optionsDynamic.count : 2,
+      startOffset: Number.isFinite(optionsDynamic.startOffset) ? optionsDynamic.startOffset : 0,
+      step: Number.isFinite(optionsDynamic.step) ? optionsDynamic.step : -1,
+      format: optionsDynamic.format || "monthYear",
+    });
+  }
+
+  return [];
+}
+
+function buildMonthOptions({ count, startOffset, step, format }) {
+  const options = [];
+  const base = new Date();
+
+  for (let i = 0; i < count; i += 1) {
+    const date = new Date(base.getFullYear(), base.getMonth() + startOffset + step * i, 1);
+    options.push(formatMonth(date, format));
+  }
+
+  return options;
+}
+
+function formatMonth(date, format) {
+  let config = { month: "long", year: "numeric" };
+  switch (format) {
+    case "month":
+      config = { month: "long" };
+      break;
+    case "shortMonth":
+      config = { month: "short" };
+      break;
+    case "shortMonthYear":
+      config = { month: "short", year: "numeric" };
+      break;
+    case "monthYear":
+    default:
+      config = { month: "long", year: "numeric" };
+      break;
+  }
+  return new Intl.DateTimeFormat(undefined, config).format(date);
 }
 
 function renderFields(template) {

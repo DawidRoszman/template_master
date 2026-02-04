@@ -20,6 +20,13 @@ function normalizeTemplates(data) {
     if (!Array.isArray(template.fields)) {
       template.fields = [];
     }
+    template.fields.forEach((field) => {
+      if (field.type === "select") {
+        if (field.optionsDynamic && !Array.isArray(field.options)) {
+          field.options = field.options || [];
+        }
+      }
+    });
   });
   return data;
 }
