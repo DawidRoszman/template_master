@@ -13,7 +13,8 @@
 
 ## Customize templates
 Open `Tools` > `Add-ons and Themes` > your extension > `Preferences`, or click `Manage templates` in the popup.
-Edit the JSON and save. Use `{{field_id}}` placeholders in `subject` and `body`.
+Use the form editor to manage templates, fields, and the rich-text body. Use `{{field_id}}` placeholders in `subject` and `body`.
+If you need to import/export JSON, open the **Advanced JSON** panel and apply it there.
 
 Example field definition:
 ```json

@@ -7,16 +7,112 @@
   </head>
   <body>
     <header>
-      <h1>Mail Templates</h1>
-      <p>Define templates as JSON. Use {{field_id}} placeholders in subject/body.</p>
-    </header>
-
-    <main>
-      <textarea id="templatesJson" rows="24" spellcheck="false"></textarea>
-      <div class="actions">
-        <button id="saveTemplates" type="button">Save templates</button>
+      <div>
+        <h1>Mail Templates</h1>
+        <p>Create and manage templates with friendly forms. Use {{field_id}} placeholders in subject/body.</p>
+      </div>
+      <div class="header-actions">
+        <button id="saveAll" type="button">Save templates</button>
         <span id="status" role="status"></span>
       </div>
+    </header>
+
+    <main class="layout">
+      <aside class="template-list">
+        <div class="list-header">
+          <h2>Templates</h2>
+          <button id="addTemplate" type="button">New template</button>
+        </div>
+        <ul id="templates" class="list"></ul>
+      </aside>
+
+      <section class="editor">
+        <div class="editor-card">
+          <div class="editor-header">
+            <h2 id="editorTitle">Template details</h2>
+            <div class="editor-actions">
+              <button id="deleteTemplate" type="button" class="ghost">Delete</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <label class="field">
+              <span>Template id</span>
+              <input id="templateId" type="text" placeholder="e.g. intro" />
+            </label>
+            <label class="field">
+              <span>Template name</span>
+              <input id="templateName" type="text" placeholder="Human friendly label" />
+            </label>
+            <label class="field">
+              <span>Subject</span>
+              <input id="templateSubject" type="text" placeholder="Subject line" />
+            </label>
+            <div class="inline-controls">
+              <label class="field inline">
+                <span>Insert field</span>
+                <select id="subjectInsert"></select>
+              </label>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3>Fields</h3>
+              <button id="addField" type="button" class="ghost">Add field</button>
+            </div>
+            <div id="fields" class="field-list"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3>Body</h3>
+              <label class="field inline">
+                <span>Insert field</span>
+                <select id="bodyInsert"></select>
+              </label>
+            </div>
+            <div class="toolbar" role="toolbar" aria-label="Formatting">
+              <button type="button" data-command="bold"><strong>B</strong></button>
+              <button type="button" data-command="italic"><em>I</em></button>
+              <button type="button" data-command="createLink">Link</button>
+              <button type="button" data-command="insertUnorderedList">Bullets</button>
+              <button type="button" data-command="insertOrderedList">Numbered</button>
+              <button type="button" data-command="insertParagraph">Paragraph</button>
+              <button type="button" data-command="insertLineBreak">Line break</button>
+            </div>
+            <div id="bodyEditor" class="rich-editor" contenteditable="true" aria-label="Template body"></div>
+            <div class="preview">
+              <h4>Preview</h4>
+              <div id="bodyPreview" class="preview-box"></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3>Validation</h3>
+            <ul id="warnings" class="warnings"></ul>
+          </div>
+        </div>
+
+        <details class="advanced" id="advancedPanel">
+          <summary>Advanced JSON</summary>
+          <div class="advanced-grid">
+            <div>
+              <h3>Live JSON preview</h3>
+              <pre id="jsonPreview"></pre>
+              <button id="copyJson" type="button" class="ghost">Copy JSON</button>
+            </div>
+            <div>
+              <h3>Edit JSON</h3>
+              <textarea id="jsonEditor" rows="12" spellcheck="false"></textarea>
+              <div class="advanced-actions">
+                <button id="applyJson" type="button">Apply JSON</button>
+              </div>
+              <p class="help">Applying JSON will replace the current template list.</p>
+            </div>
+          </div>
+        </details>
+      </section>
     </main>
 
     <script src="../shared/default-templates.js"></script>
