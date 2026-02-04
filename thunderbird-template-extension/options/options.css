@@ -1,0 +1,51 @@
+:root {
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  color: #1b1b1b;
+  background: #f6f2ee;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+}
+
+header {
+  margin-bottom: 16px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #c8c1bc;
+  padding: 12px;
+  font-family: "Fira Code", "Consolas", monospace;
+  font-size: 13px;
+  background: #fff;
+}
+
+.actions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+button {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: #2d4f5d;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#status {
+  font-size: 13px;
+  color: #6d655e;
+}

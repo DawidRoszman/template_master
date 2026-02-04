@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Mail Templates Options</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Mail Templates</h1>
+      <p>Define templates as JSON. Use {{field_id}} placeholders in subject/body.</p>
+    </header>
+
+    <main>
+      <textarea id="templatesJson" rows="24" spellcheck="false"></textarea>
+      <div class="actions">
+        <button id="saveTemplates" type="button">Save templates</button>
+        <span id="status" role="status"></span>
+      </div>
+    </main>
+
+    <script src="../shared/default-templates.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

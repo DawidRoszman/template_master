@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "Mail Templates",
+  "version": "0.1.0",
+  "description": "Create and apply mail templates with input fields.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "mail-templates@local",
+      "strict_min_version": "115.0"
+    }
+  },
+  "permissions": ["compose", "storage", "tabs"],
+  "background": {
+    "scripts": ["shared/default-templates.js", "background.js"]
+  },
+  "compose_action": {
+    "default_title": "Mail Templates",
+    "default_popup": "popup/popup.html"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  }
+}

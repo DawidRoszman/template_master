@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Mail Templates</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Mail Templates</h1>
+      <button id="openOptions" type="button">Manage templates</button>
+    </header>
+
+    <section>
+      <label for="templateSelect">Template</label>
+      <select id="templateSelect"></select>
+    </section>
+
+    <section id="fieldsSection"></section>
+
+    <section id="previewSection" class="hidden">
+      <div class="preview-block">
+        <div class="preview-label">Subject preview</div>
+        <div id="subjectPreview" class="preview"></div>
+      </div>
+      <div class="preview-block">
+        <div class="preview-label">Body preview</div>
+        <div id="bodyPreview" class="preview"></div>
+      </div>
+    </section>
+
+    <footer>
+      <div id="status" role="status"></div>
+      <button id="applyTemplate" type="button">Apply to compose</button>
+    </footer>
+
+    <script src="../shared/default-templates.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
