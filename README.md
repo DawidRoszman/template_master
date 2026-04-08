@@ -1,10 +1,45 @@
 # Mail Templates (Thunderbird)
 
 ## Load in Thunderbird
+
+### Install a release (recommended)
+1. Open the GitHub **Releases** page for this repository.
+2. Download `mail-templates.xpi` from the latest release (or use the stable URL  
+   `https://github.com/OWNER/REPO/releases/latest/download/mail-templates.xpi` after you replace `OWNER` and `REPO`).
+3. In Thunderbird: `Tools` > `Add-ons and Themes` > gear icon > **Install Add-on From File…** and choose the `.xpi` file.
+
+### Temporary load (development only)
 1. Open Thunderbird.
 2. Go to `Tools` > `Add-ons and Themes`.
 3. Click the gear icon and choose `Debug Add-ons`.
 4. Click `Load Temporary Add-on...` and select `manifest.json` from this folder.
+
+## Publish a new version (maintainers)
+
+1. Bump `"version"` in `manifest.json` (semver, e.g. `0.2.0`).
+2. Commit and push to `main`.
+3. Create and push a **git tag** that matches the manifest version with a `v` prefix:
+   ```bash
+   git tag v0.2.0
+   git push origin v0.2.0
+   ```
+4. GitHub Actions builds the XPI, checks that the tag matches `manifest.json`, writes `updates.json`, and creates a **Release** with `mail-templates.xpi`, a versioned copy, and `updates.json` attached.
+
+Local build: `npm run build` produces `dist/mail-templates.xpi` and `dist/mail-templates-<version>.xpi`.
+
+### Optional: automatic updates for users
+
+Thunderbird can fetch updates from a hosted `updates.json`. Each release workflow generates `updates.json` with the correct `update_link` and `update_hash` for that release’s XPI.
+
+1. Host `updates.json` at a **stable HTTPS URL** (for example: commit the file from the release assets to the repo default branch and use  
+   `https://raw.githubusercontent.com/OWNER/REPO/main/updates.json`).
+2. In `manifest.json`, under `browser_specific_settings.gecko`, add:
+   ```json
+   "update_url": "https://raw.githubusercontent.com/OWNER/REPO/main/updates.json"
+   ```
+3. After each release, update the committed `updates.json` with the asset from that release (or automate copying it into the repo).
+
+For a wider audience, publishing signed builds on [Thunderbird Add-ons](https://addons.thunderbird.net/) is the usual approach; Mozilla hosts updates for you.
 
 ## Use
 1. Open a new compose window.
