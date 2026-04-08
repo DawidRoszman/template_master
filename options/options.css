@@ -211,6 +211,11 @@ header p {
   gap: 10px;
 }
 
+.fields-footer {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .field-row {
   border: 1px solid #e3d9d2;
   border-radius: 12px;
