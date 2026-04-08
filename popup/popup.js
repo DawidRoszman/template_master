@@ -84,6 +84,9 @@ function createFieldInput(field) {
     input = document.createElement("input");
     input.type = "text";
     input.placeholder = field.placeholder || "";
+    if (field.defaultValue != null && String(field.defaultValue) !== "") {
+      input.value = String(field.defaultValue);
+    }
   }
 
   input.id = `field-${field.id}`;

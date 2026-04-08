@@ -314,6 +314,9 @@ function renderFields(current) {
         delete field.options;
         delete field.optionsDynamic;
       }
+      if (field.type !== "text") {
+        delete field.defaultValue;
+      }
       if (field.type === "calculateSalary") {
         if (field.timeFieldId === undefined) {
           field.timeFieldId = "";
@@ -342,6 +345,23 @@ function renderFields(current) {
     row.appendChild(labelInput.wrapper);
     row.appendChild(typeWrapper);
     row.appendChild(requiredWrapper);
+
+    if (field.type === "text") {
+      const defaultInput = createFieldInput(
+        "Default value",
+        field.defaultValue != null ? String(field.defaultValue) : "",
+      );
+      defaultInput.input.addEventListener("input", (event) => {
+        const raw = event.target.value;
+        if (raw === "") {
+          delete field.defaultValue;
+        } else {
+          field.defaultValue = raw;
+        }
+        markDirty();
+      });
+      row.appendChild(defaultInput.wrapper);
+    }
 
     if (field.type === "select") {
       const optionsInput = document.createElement("input");
