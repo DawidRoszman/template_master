@@ -13,6 +13,23 @@ let templates = [];
 let currentTemplate = null;
 let contactValues = {};
 
+const urlParams = new URLSearchParams(window.location.search);
+const rawComposeTabId = urlParams.get("composeTabId");
+const composeTabIdFromUrl =
+  rawComposeTabId !== null && rawComposeTabId !== "" ? Number.parseInt(rawComposeTabId, 10) : NaN;
+
+function isValidComposeTabId(id) {
+  return Number.isInteger(id) && id >= 0;
+}
+
+async function resolveComposeTabId() {
+  if (isValidComposeTabId(composeTabIdFromUrl)) {
+    return composeTabIdFromUrl;
+  }
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  return tab?.id ?? null;
+}
+
 function setStatus(message) {
   statusEl.textContent = message;
 }
@@ -203,6 +220,10 @@ async function loadTemplates() {
     renderFields(currentTemplate);
   }
   await loadContactValues();
+  const tabId = await resolveComposeTabId();
+  if (tabId == null) {
+    setStatus("Open Mail Templates from the compose toolbar.");
+  }
 }
 
 function validateRequiredFields() {
@@ -235,13 +256,13 @@ async function applyTemplate() {
   const bodyPlain = toPlainText(bodyHtml);
 
   try {
-    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    if (!tab) {
+    const tabId = await resolveComposeTabId();
+    if (tabId == null) {
       setStatus("No active compose tab found.");
       return;
     }
 
-    await browser.compose.setComposeDetails(tab.id, {
+    await browser.compose.setComposeDetails(tabId, {
       subject,
       body: bodyHtml,
       plainTextBody: bodyPlain,
@@ -277,11 +298,11 @@ async function loadContactValues() {
 
 async function fetchContactValues() {
   try {
-    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    if (!tab) {
+    const tabId = await resolveComposeTabId();
+    if (tabId == null) {
       return {};
     }
-    const details = await browser.compose.getComposeDetails(tab.id);
+    const details = await browser.compose.getComposeDetails(tabId);
     const recipients = normalizeRecipients(details?.to);
     if (recipients.length === 0) {
       return {};

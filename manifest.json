@@ -9,13 +9,12 @@
       "strict_min_version": "115.0"
     }
   },
-  "permissions": ["compose", "storage", "tabs", "addressBooks"],
+  "permissions": ["compose", "storage", "tabs", "addressBooks", "windows"],
   "background": {
     "scripts": ["shared/default-templates.js", "background.js"]
   },
   "compose_action": {
-    "default_title": "Mail Templates",
-    "default_popup": "popup/popup.html"
+    "default_title": "Mail Templates"
   },
   "options_ui": {
     "page": "options/options.html",
